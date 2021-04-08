@@ -1,7 +1,7 @@
 local db = require('lapis.db')
 local lapis = require('lapis')
 local socket = require('socket')
-local inspect = require('inspect')
+-- local inspect = require('inspect')
 
 local app = lapis.Application()
 app:enable('etlua')
