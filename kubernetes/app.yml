@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: lua
+  labels:
+    app: app
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - image: hectorvido/lua-app
+        name: migration
+        env:
+        - name: SECRET
+          value: 'UxNGNjv5qjbmhpbRjTnVNGknUEzBQnee'
+        - name: DB_HOST
+          value: 'mariadb.lua.svc.cluster.local'
+        - name: DB_USER
+          value: 'lua'
+        - name: DB_PASSWORD
+          value: '4linux'
+        - name: DB_DATABASE
+          value: 'lua'
+        command:
+        - lapis 
+        args:
+        - migrate
+      containers:
+      - image: hectorvido/lua-app
+        name: lua
+        env:
+        - name: SECRET
+          value: 'UxNGNjv5qjbmhpbRjTnVNGknUEzBQnee'
+        - name: DB_HOST
+          value: 'mariadb.lua.svc.cluster.local'
+        - name: DB_USER
+          value: 'lua'
+        - name: DB_PASSWORD
+          value: '4linux'
+        - name: DB_DATABASE
+          value: 'lua'
+        ports:
+        - name: web
+          containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: app
+  name: app
+  namespace: lua
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: lua
+spec:
+  rules:
+  - host: "lua.192-168-99-102.nip.io"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app
+            port:
+              number: 80
