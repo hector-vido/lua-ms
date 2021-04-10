@@ -1,34 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lua
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: lua
   labels:
-    app: app
-  name: app
+    app: lua
+  name: lua
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: lua
   template:
     metadata:
       labels:
-        app: app
+        app: lua
     spec:
       initContainers:
       - image: hectorvido/lua-app
         name: migration
-        env:
-        - name: SECRET
-          value: 'UxNGNjv5qjbmhpbRjTnVNGknUEzBQnee'
-        - name: DB_HOST
-          value: 'mariadb.lua.svc.cluster.local'
-        - name: DB_USER
-          value: 'lua'
-        - name: DB_PASSWORD
-          value: '4linux'
-        - name: DB_DATABASE
-          value: 'lua'
+        envFrom:
+        - secretRef:
+            name: lua
         command:
         - lapis 
         args:
@@ -36,17 +33,9 @@ spec:
       containers:
       - image: hectorvido/lua-app
         name: lua
-        env:
-        - name: SECRET
-          value: 'UxNGNjv5qjbmhpbRjTnVNGknUEzBQnee'
-        - name: DB_HOST
-          value: 'mariadb.lua.svc.cluster.local'
-        - name: DB_USER
-          value: 'lua'
-        - name: DB_PASSWORD
-          value: '4linux'
-        - name: DB_DATABASE
-          value: 'lua'
+        envFrom:
+        - secretRef:
+            name: lua
         ports:
         - name: web
           containerPort: 80
@@ -55,8 +44,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: app
-  name: app
+    app: lua
+  name: lua
   namespace: lua
 spec:
   ports:
@@ -64,12 +53,12 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: app
+    app: lua
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app
+  name: lua
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
   namespace: lua
@@ -82,6 +71,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: app
+            name: lua
             port:
               number: 80

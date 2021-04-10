@@ -1,0 +1,21 @@
+version: '3.0'
+
+services:
+
+  app:
+    image: hectorvido/lua-app
+    ports:
+    - 8080:80
+    environment:
+    - DB_HOST=db
+    - DB_USER=lua
+    - DB_PASSWORD=4linux
+    - DB_DATABASE=lua
+    - SECRET=UxNGNjv5qjbmhpbRjTnVNGknUEzBQnee
+  db:
+    image: mariadb:10.5
+    environment:
+    - MYSQL_ROOT_PASSWORD=!Abc123
+    - MYSQL_USER=lua
+    - MYSQL_PASSWORD=4linux
+    - MYSQL_DATABASE=lua
