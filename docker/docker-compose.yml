@@ -19,3 +19,8 @@ services:
     - MYSQL_USER=lua
     - MYSQL_PASSWORD=4linux
     - MYSQL_DATABASE=lua
+    volumes:
+    - mariadb:/var/lib/mysql
+
+volumes:
+  mariadb: {}
