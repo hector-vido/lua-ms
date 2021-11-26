@@ -46,5 +46,9 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 kubectl patch deploy ingress-nginx-controller -n ingress-nginx --patch '{"spec" : {"template" : {"spec" : {"hostNetwork" : true}}}}'
 kubectl annotate ingressclass nginx ingressclass.kubernetes.io/is-default-class=true
 
-mkdir -p /srv/{jenkins,gitea}
-chown 1000:1000 /srv/{jenkins,gitea}
+mkdir -p /srv/{jenkins,gitea,postgres}
+mkdir -p /srv/{sonarqube_data,sonarqube_extensions,sonarqube_logs}
+chown 1000:1000 /srv/*
+
+sysctl -w vm.max_map_count=262144
+echo 'vm.max_map_count=262144' > /etc/sysctl.d/elastic.conf
