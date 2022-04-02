@@ -7,7 +7,8 @@ RUN echo "http://openresty.org/package/alpine/v3.12/main" >> /etc/apk/repositori
 	&& apk add --no-cache luarocks5.1 lua-inspect lua5.1-sql-mysql openresty gcc musl-dev openssl-dev lua5.1-dev \
 	&& luarocks-5.1 install lapis \
 	&& adduser -h /opt/app -D -H openresty \
-	&& chown -R openresty:root /usr/local/openresty/nginx/
+	&& chown -R openresty:root /usr/local/openresty/nginx/ \
+	&& find /usr/local/openresty/nginx -type d -exec chmod g+ws {} \;
 
 COPY docker/nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY . /opt/app
