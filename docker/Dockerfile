@@ -2,13 +2,13 @@ FROM alpine:3.15
 
 EXPOSE 8080
 
-RUN echo "http://openresty.org/package/alpine/v3.12/main" >> /etc/apk/repositories \
+RUN echo "http://openresty.org/package/alpine/v3.15/main" >> /etc/apk/repositories \
 	&& wget 'http://openresty.org/package/admin@openresty.com-5ea678a6.rsa.pub' -O /etc/apk/keys/admin@openresty.com-5ea678a6.rsa.pub \
 	&& apk add --no-cache luarocks5.1 lua-inspect lua5.1-sql-mysql openresty gcc musl-dev openssl-dev lua5.1-dev \
 	&& luarocks-5.1 install lapis \
 	&& adduser -h /opt/app -D -H openresty \
 	&& chown -R openresty:root /usr/local/openresty/nginx/ \
-	&& find /usr/local/openresty/nginx -type d -exec chmod g+ws {} \;
+	&& chmod -R g=u /usr/local/openresty/nginx
 
 COPY docker/nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY . /opt/app
